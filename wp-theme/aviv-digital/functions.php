@@ -7,22 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AVIVDIGITAL_VERSION', '2.0.0' );
+define( 'AVIVDIGITAL_VERSION', '2.1.0' );
 
-/**
- * פרטי הקשר של העסק. מרוכזים במקום אחד כדי שעדכון מספר או קישור
- * ייעשה בשורה אחת ולא בפיזור על פני התבניות.
- */
-function avivdigital_contact( $key ) {
-	$data = array(
-		'whatsapp'       => '972528225337',
-		'whatsapp_label' => '+972-52-822-5337',
-		'questionnaire'  => 'https://avivdigi.com/questionnaire/',
-		'work_url'       => 'https://amitfarhandoula.com',
-	);
-
-	return isset( $data[ $key ] ) ? $data[ $key ] : '';
-}
+require_once get_template_directory() . '/inc/customizer.php';
 
 function avivdigital_setup() {
 	add_theme_support( 'title-tag' );

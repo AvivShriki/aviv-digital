@@ -6,7 +6,7 @@
       <?php echo avivdigital_logo_svg( '#fff' ); ?>
       אביב דיגיטל
     </div>
-    <p>סטודיו בוטיק לבניית דפי נחיתה ואתרים</p>
+    <p><?php echo esc_html( avivdigital_text( 'foot_tagline' ) ); ?></p>
     <p>© אביב דיגיטל</p>
   </div>
 </footer>
