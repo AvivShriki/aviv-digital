@@ -1,0 +1,539 @@
+/*
+Theme Name: אביב דיגיטל
+Theme URI: https://avivdigi.com
+Author: אביב שריקי
+Description: ערכת נושא ייעודית לאתר אביב דיגיטל — כיוון "כהה ופרימיום": בסיס שחור עמוק, מבטא ליים חי, טיפוגרפיה עברית נקייה ותמיכה מלאה ב-RTL.
+Version: 1.0.0
+License: GPL-2.0-or-later
+Text Domain: avivdigital
+*/
+
+/* ==========================================================================
+   טוקנים — הפלטה והטיפוגרפיה של הכיוון שנבחר (C)
+   ========================================================================== */
+
+:root {
+  --bg:            #0E0E10;
+  --bg-alt:        #141418;
+  --surface:       #1A1A1F;
+  --surface-hover: #212127;
+
+  --accent:        #C9F24A;
+  --accent-dim:    #A8CC3E;
+  --accent-ink:    #16200A;
+
+  --text:          #F5F5F0;
+  --text-soft:     #9C9CA0;
+  --text-faint:    #6A6A70;
+
+  --border:        #2A2A31;
+  --border-strong: #3A3A43;
+
+  --font: 'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+  --space-6: 96px;
+  --space-7: 140px;
+
+  --radius:    8px;
+  --radius-lg: 16px;
+  --container: 1140px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.7;
+  font-weight: 300;
+  direction: rtl;
+  text-align: right;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; text-decoration: none; }
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+}
+
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* דילוג לתוכן — נגישות */
+.skip-link {
+  position: absolute;
+  right: -9999px;
+  top: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 12px 20px;
+  z-index: 200;
+}
+.skip-link:focus { right: 12px; top: 12px; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   כפתורים
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 14px 30px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .16s ease, background .16s ease, border-color .16s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: #D5F864; }
+
+.btn-ghost { border-color: var(--border-strong); color: var(--text); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn svg { width: 17px; height: 17px; fill: currentColor; flex: none; }
+
+/* ==========================================================================
+   כותרת עליונה
+   ========================================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(14, 14, 16, .82);
+  backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 68px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.brand .sprout { width: 15px; height: auto; flex: none; }
+.brand .sprout .stem { stroke: var(--accent); stroke-width: 2.5; fill: none; stroke-linecap: round; }
+.brand .sprout path:not(.stem) { fill: var(--accent); }
+
+.main-nav ul {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.main-nav a {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-soft);
+  transition: color .15s ease;
+}
+.main-nav a:hover { color: var(--text); }
+
+.nav-cta { padding: 9px 20px; font-size: 14px; }
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text);
+  width: 40px;
+  height: 38px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+.nav-toggle svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+/* ==========================================================================
+   מקטעים כלליים
+   ========================================================================== */
+
+.section { padding: var(--space-6) 0; }
+.section-alt { background: var(--bg-alt); }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  color: var(--text-faint);
+  margin: 0 0 18px;
+}
+.eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+
+.section-head { max-width: 620px; margin-bottom: var(--space-5); }
+.section-head h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 14px; }
+.section-head p { color: var(--text-soft); font-size: 17px; margin: 0; }
+
+.accent { color: var(--accent); }
+
+/* ==========================================================================
+   הירו
+   ========================================================================== */
+
+.hero {
+  padding: var(--space-7) 0 var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  top: -220px;
+  left: -180px;
+  width: 620px;
+  height: 620px;
+  background: radial-gradient(circle, rgba(201, 242, 74, .10) 0%, transparent 66%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 760px; position: relative; z-index: 1; }
+.hero h1 {
+  font-size: clamp(38px, 6.4vw, 68px);
+  line-height: 1.08;
+  margin-bottom: 24px;
+}
+.hero-lead {
+  font-size: clamp(17px, 2vw, 20px);
+  color: var(--text-soft);
+  max-width: 560px;
+  margin: 0 0 var(--space-4);
+}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+.hero-stat strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.hero-stat span { font-size: 14px; color: var(--text-faint); }
+
+/* ==========================================================================
+   הצהרה
+   ========================================================================== */
+
+.statement { padding: var(--space-6) 0; background: var(--bg-alt); }
+.statement-quote {
+  max-width: 860px;
+  font-size: clamp(24px, 3.6vw, 38px);
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--space-3);
+}
+.statement-note {
+  max-width: 620px;
+  color: var(--text-soft);
+  margin: 0;
+}
+
+/* ==========================================================================
+   שירותים
+   ========================================================================== */
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+.service-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 34px 30px;
+  transition: border-color .18s ease, transform .18s ease;
+}
+.service-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+.service-card h3 { font-size: 24px; margin-bottom: 10px; }
+.service-card > p { color: var(--text-soft); font-size: 16px; margin: 0 0 22px; }
+
+.service-list { list-style: none; margin: 0; padding: 0; }
+.service-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  font-size: 15px;
+  color: var(--text-soft);
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+}
+.service-list li::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  margin-top: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: rgba(201, 242, 74, .13);
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ==========================================================================
+   תיק עבודות
+   ========================================================================== */
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.work-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color .18s ease, transform .18s ease;
+}
+.work-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.work-thumb {
+  aspect-ratio: 16 / 10;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.work-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.work-thumb--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(201, 242, 74, .10) 0%, transparent 60%),
+    var(--bg-alt);
+  color: var(--text-faint);
+  font-size: 14px;
+  letter-spacing: .04em;
+}
+.work-body { padding: 22px 24px; }
+.work-body h3 { font-size: 18px; margin-bottom: 5px; }
+.work-body p { font-size: 14px; color: var(--text-faint); margin: 0; }
+
+.work-card--soon { border-style: dashed; }
+.work-card--soon:hover { transform: none; border-color: var(--border-strong); }
+.work-soon-inner {
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  font-size: 15px;
+}
+
+/* ==========================================================================
+   ההבטחה — שלושה עמודים
+   ========================================================================== */
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.pillar { background: var(--bg); padding: 34px 30px; }
+.pillar-num {
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: .1em;
+  display: block;
+  margin-bottom: 14px;
+}
+.pillar h3 { font-size: 20px; margin-bottom: 9px; }
+.pillar p { color: var(--text-soft); font-size: 15px; margin: 0; }
+
+/* ==========================================================================
+   התהליך
+   ========================================================================== */
+
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 28px 24px;
+}
+.process-step { position: relative; padding-top: 22px; border-top: 2px solid var(--border); }
+.process-step::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: 0;
+  width: 34px;
+  height: 2px;
+  background: var(--accent);
+}
+.process-num {
+  font-size: 13px;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 8px;
+}
+.process-step h3 { font-size: 18px; margin-bottom: 7px; }
+.process-step p { color: var(--text-soft); font-size: 15px; margin: 0; }
+
+/* ==========================================================================
+   קריאה לפעולה
+   ========================================================================== */
+
+.cta {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(201, 242, 74, .09) 0%, transparent 58%);
+  pointer-events: none;
+}
+.cta > * { position: relative; }
+.cta h2 { font-size: clamp(26px, 4vw, 38px); margin-bottom: 14px; }
+.cta p { color: var(--text-soft); max-width: 520px; margin: 0 auto var(--space-3); }
+.cta-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+
+/* ==========================================================================
+   פוטר
+   ========================================================================== */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: var(--space-5) 0 var(--space-4);
+  margin-top: var(--space-6);
+}
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: var(--space-4);
+}
+.footer-tagline { color: var(--text-soft); font-size: 15px; margin: 10px 0 0; max-width: 300px; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 30px; }
+.footer-col h4 { font-size: 13px; color: var(--text-faint); letter-spacing: .1em; font-weight: 400; margin-bottom: 12px; }
+.footer-col a { display: block; font-size: 15px; color: var(--text-soft); padding: 4px 0; }
+.footer-col a:hover { color: var(--accent); }
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+  font-size: 14px;
+  color: var(--text-faint);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* כפתור וואטסאפ צף */
+.wa-float {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  z-index: 120;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #1EBE5D;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, .5);
+  transition: transform .16s ease;
+}
+.wa-float:hover { transform: scale(1.07); }
+.wa-float svg { width: 26px; height: 26px; fill: currentColor; }
+
+/* ==========================================================================
+   מובייל
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .section { padding: var(--space-5) 0; }
+  .hero { padding: var(--space-5) 0 var(--space-4); }
+  .nav-toggle { display: inline-flex; }
+  .nav-cta { display: none; }
+  .main-nav {
+    display: none;
+    position: absolute;
+    top: 68px;
+    right: 0;
+    left: 0;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px 20px;
+  }
+  .main-nav.is-open { display: block; }
+  .main-nav ul { flex-direction: column; align-items: stretch; gap: 0; }
+  .main-nav a { display: block; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 16px; }
+  .hero-stats { gap: 26px; }
+  .cta { padding: var(--space-4) var(--space-3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
