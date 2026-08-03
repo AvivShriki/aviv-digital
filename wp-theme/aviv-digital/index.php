@@ -27,7 +27,7 @@ get_header();
       ?>
       <div class="section-head">
         <h2>לא נמצא תוכן</h2>
-        <p>הדף שחיפשתם לא קיים. <a class="accent" href="<?php echo esc_url( home_url( '/' ) ); ?>">חזרה לעמוד הבית</a>.</p>
+        <p class="section-sub">הדף שחיפשתם לא קיים. <a href="<?php echo esc_url( home_url( '/' ) ); ?>">חזרה לעמוד הבית</a>.</p>
       </div>
       <?php
     endif;

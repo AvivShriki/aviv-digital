@@ -1,36 +1,55 @@
-/* אינטראקציות של האתר — תפריט מובייל וגלילה חלקה לעוגנים. */
+// אביב דיגיטל — עמוד הבית: תפריט מובייל + חשיפה בגלילה
 
-document.addEventListener('DOMContentLoaded', function () {
-  var toggle = document.querySelector('.nav-toggle');
-  var nav = document.getElementById('main-nav');
+document.addEventListener('DOMContentLoaded', () => {
+  initNavToggle();
+  initScrollReveal();
+});
 
-  if (toggle && nav) {
-    toggle.addEventListener('click', function () {
-      var isOpen = nav.classList.toggle('is-open');
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
+function initNavToggle() {
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.main-nav');
+  if (!toggle || !nav) return;
 
-    // סגירת התפריט אחרי בחירת קישור, כדי שהעוגן ייראה מיד
-    nav.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') {
-        nav.classList.remove('is-open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
+  toggle.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
 
-  // גלילה חלקה, בכיבוד העדפת צמצום תנועה של המערכת
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduceMotion) return;
-
-  document.querySelectorAll('a[href^="#"]').forEach(function (link) {
-    link.addEventListener('click', function (e) {
-      var id = link.getAttribute('href');
-      if (id.length < 2) return;
-      var target = document.querySelector(id);
-      if (!target) return;
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  nav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      nav.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
     });
   });
-});
+}
+
+function initScrollReveal() {
+  const items = document.querySelectorAll('.reveal, .reveal-section');
+  if (items.length === 0) return;
+
+  const revealAll = () => items.forEach((el) => el.classList.add('is-visible'));
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) {
+    revealAll();
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  items.forEach((el) => observer.observe(el));
+
+  // ניווט ישיר לעוגן (למשל קישור בתפריט) יכול "לדלג" מעל סקשן בלי
+  // שהוא אי-פעם ייכנס לתצוגה — במקרה כזה חושפים הכל מיד.
+  document.querySelectorAll('a[href*="#"]').forEach((link) => {
+    link.addEventListener('click', revealAll);
+  });
+  window.addEventListener('hashchange', revealAll);
+}
