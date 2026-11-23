@@ -78,10 +78,9 @@ function initPortfolio() {
 
   const originals = Array.from(ring.children);
   const PROJECTS = originals.length;
-  const CYCLES = 3;   // 4 פרויקטים × 3 = 12 אריחים כל 30°. בגליל רואים רק
-                      // את הקשת הקדמית, והחצי האחורי מוסתר ב-backface.
+  const CYCLES = 6;   // 24 אריחים כל 15° — בדיוק כמו ברפרנס
   const STEP = 360 / (PROJECTS * CYCLES);
-  const FRONT = 0;            // בגליל החזית היא פשוט rotateY(0) מול הצופה
+  const FRONT = 20;           // נמדד: הזווית שבה אריח תופס את השטח הנראה הגדול ביותר
   const IDLE_DPS = 6;         // סיבוב חופשי, מעלות לשנייה. ב-9 (כמו ברפרנס)
                               // שורת הזהות מתחלפת כל 1.67 שניות — מהר מדי לקריאה.
   const FRICTION = 0.94;      // דעיכת האינרציה לפריים
@@ -147,7 +146,8 @@ function initPortfolio() {
   /* ---------- כתיבה ---------- */
 
   function write() {
-    ring.style.transform = 'rotateY(' + spin.toFixed(3) + 'deg)';
+    ring.style.transform = 'rotateX(var(--cam-x)) rotateY(var(--cam-y)) rotateZ(calc(var(--cam-z) + '
+      + spin.toFixed(3) + 'deg))';
   }
 
   // מי בחזית — חשבון ישיר מהזווית, בלי לקרוא מהפריסה

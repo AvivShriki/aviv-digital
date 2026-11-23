@@ -316,19 +316,24 @@ body {
 .section.has-ring .pf-bar { justify-content: center; }
 
 .pf-stage.is-ring {
-  /* גליל סביב ציר אנכי: האריחים זקופים ופונים החוצה, והסיבוב הוא
-     rotateY על ההורה בלבד. העומק מגיע מהפרספקטיבה ולא מהטיית הכרטיס,
-     ולכן הם גם יציבים לקריאה וגם מטרה אמינה ללחיצה. */
-  --pf-r: min(34vw, 430px);          /* רדיוס הגליל */
-  --pf-w: min(17vw, 214px);          /* רוחב אריח */
+  /* שרשרת הטרנספורם של הרפרנס, מדודה מהאתר שלהם:
+     הטבעת:  rotateX(52deg) rotateY(14deg) rotateZ(-25deg + spin)
+     אריח:   rotateZ(i*15deg) translateX(R) rotateX(90deg)
+     היחסים שלהם במובייל: R/רוחב = 0.42, אריח/R = 0.535. */
+  --cam-x: 52deg;
+  --cam-y: 14deg;
+  --cam-z: 0deg;
+  --pf-r: 34vw;
+  --pf-w: 12vw;
   --pf-h: calc(var(--pf-w) * 2.1667);
+  --hub-x: 6%;
+  --hub-y: 26%;
   position: relative;
-  --pf-zoom: 1.26;                   /* ההגדלה של הכרטיס הקדמי בפרספקטיבה */
-  height: calc(var(--pf-h) * var(--pf-zoom) + 92px);
+  height: min(76vh, 820px);
   overflow: hidden;
-  perspective: 2200px;
+  perspective: 1500px;
   perspective-origin: 50% 50%;
-  touch-action: pan-y;               /* גרירה אנכית ממשיכה לגלול את הדף */
+  touch-action: pan-y;
   cursor: grab;
 }
 .pf-stage.is-ring .pf-ring { will-change: auto; }
@@ -343,7 +348,7 @@ body {
 .pf-stage.is-ring::after { right: 0; background: linear-gradient(to left, var(--black), transparent); }
 
 .pf-stage.is-ring .pf-ring {
-  position: absolute; left: 50%; top: 50%;
+  position: absolute; left: var(--hub-x); top: var(--hub-y);
   display: block; width: 0; height: 0; padding: 0; overflow: visible;
   transform-style: preserve-3d;
 }
@@ -352,9 +357,8 @@ body {
   left: calc(var(--pf-w) / -2); top: calc(var(--pf-h) / -2);
   width: var(--pf-w); height: var(--pf-h);
   transform-style: preserve-3d;
-  backface-visibility: hidden;       /* החצי האחורי של הגליל לא מוצג כלל */
   /* נקבע פעם אחת בבנייה ולא נכתב שוב */
-  transform: rotateY(calc(var(--i) * var(--pf-step))) translateZ(var(--pf-r));
+  transform: rotateZ(calc(var(--i) * var(--pf-step))) translateX(var(--pf-r)) rotateX(90deg);
 }
 .pf-stage.is-ring .pf-card {
   height: 100%; gap: 0; position: relative;
@@ -368,7 +372,7 @@ body {
   height: 100%; aspect-ratio: auto; padding: 7px; border-radius: 32px;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 34px 70px -18px rgba(0, 0, 0, 0.9);
   transition: box-shadow 0.4s ease, filter 0.4s ease;
-  filter: brightness(0.78);
+  filter: brightness(0.86);
 }
 .pf-stage.is-ring .pf-screen img { border-radius: 25px; }
 
@@ -387,12 +391,7 @@ body {
    בפס משלה. הנחת הטבעת מאחורי הטקסט עובדת רק כשיש רוחב לשתי עמודות. */
 @media (max-width: 760px) {
   .section.has-ring .section-head { margin-bottom: 26px; }
-  .pf-stage.is-ring {
-    --pf-r: 64vw;
-    --pf-w: 48vw;
-    --pf-zoom: 1.4;
-    perspective: 1500px;
-  }
+  .pf-stage.is-ring { --pf-r: 44vw; --pf-w: 24vw; --hub-x: 8%; --hub-y: 24%; height: 82vh; }
   .pf-bar { gap: 14px; }
   .pf-now { order: 3; flex-basis: 100%; }
 }
