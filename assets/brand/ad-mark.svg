@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="AvivDigital">
+<title>AvivDigital</title>
+  <g fill="none" stroke="#0A0A0A" stroke-width="12" stroke-linejoin="miter" stroke-linecap="butt">
+    <path d="M10 107 L36 21 L60 107"/>
+    <path d="M19 81 H53"/>
+    <path d="M60 21 V107"/>
+    <path d="M60 21 C96 21 116 40 116 64 C116 88 96 107 60 107"/>
+  </g>
+</svg>
