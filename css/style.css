@@ -126,6 +126,7 @@ body {
 
 .hero { background: var(--mint); padding: 72px 0 88px; overflow: hidden; }
 .hero .container { display: grid; grid-template-columns: 0.95fr 1.05fr; align-items: center; gap: 48px; }
+.section.on-black .eyebrow { color: var(--white); }
 .eyebrow { display: block; font-size: 14px; font-weight: 600; color: var(--black); opacity: 0.65; margin: 0 0 18px; }
 .hero h1 {
   font-family: var(--font); font-weight: 400; font-size: clamp(32px, 4.6vw, 50px);
@@ -237,35 +238,92 @@ body {
    4 — תיק עבודות (שחור) — מציבי מקום כנים, לא פרויקטים מומצאים
    ========================================================================== */
 
-.work-placeholders { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.work-slot {
-  aspect-ratio: 4/3; border: 1.5px dashed #4A4A4A; border-radius: var(--radius);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 10px; color: #8A8A8A; transition: border-color 0.25s ease;
+/* רכבת אופקית של כרטיסי פרויקט — גרירה בעכבר, גלילה טבעית במגע */
+.work-rail-wrap { position: relative; }
+.work-rail-wrap::before,
+.work-rail-wrap::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 72px; z-index: 2;
+  pointer-events: none; opacity: 0; transition: opacity 0.3s ease;
 }
-.work-slot:hover { border-color: var(--white); color: var(--white); }
-.work-slot svg { width: 30px; height: 30px; }
-.work-slot span { font-size: 13px; font-weight: 600; }
+/* הדף כולו RTL: ::before יושב בימין (תחילת הרכבת), ::after בשמאל (סופה). */
+.work-rail-wrap::before { inset-inline-start: 0; background: linear-gradient(to right, transparent, var(--black)); }
+.work-rail-wrap::after  { inset-inline-end: 0;  background: linear-gradient(to left,  transparent, var(--black)); }
+.work-rail-wrap.has-prev::before { opacity: 1; }
+.work-rail-wrap.has-next::after  { opacity: 1; }
 
-/* כרטיס תיק עבודות אמיתי — תמונה + כיתוב, לא מציב מקווקו */
-.work-slot--filled {
-  position: relative;
-  border: none;
-  overflow: hidden;
-  text-decoration: none;
-  color: var(--white);
-  transition: transform 0.25s ease;
+.work-rail {
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline-start: max(24px, calc((100vw - var(--container)) / 2 + 24px));
+  scrollbar-width: none; -ms-overflow-style: none;
 }
-.work-slot--filled:hover { transform: translateY(-6px); }
-.work-slot--filled img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.work-caption {
-  position: absolute; inset-inline: 0; bottom: 0;
-  background: linear-gradient(0deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0) 100%);
-  padding: 28px 16px 14px;
-  font-size: 13px; font-weight: 600; text-align: center;
+.work-rail::-webkit-scrollbar { display: none; }
+.work-rail.is-dragging { scroll-snap-type: none; cursor: grabbing; }
+
+.work-track {
+  --rail-pad: max(24px, calc((100vw - var(--container)) / 2 + 24px));
+  display: flex; gap: 20px; margin: 0; list-style: none;
+  padding: 4px 0 10px;
+  padding-inline-start: var(--rail-pad);
+  padding-inline-end: 0;
+}
+/* דפדפנים מתעלמים מהריפוד הסופי של מיכל גלילה — פריט רפאים מחזיר אותו. */
+.work-track::after { content: ""; flex: 0 0 var(--rail-pad); }
+.work-track > li {
+  flex: 0 0 clamp(260px, 30vw, 380px);
+  scroll-snap-align: start;
 }
 
-@media (max-width: 760px) { .work-placeholders { grid-template-columns: 1fr; } }
+.work-card {
+  display: flex; flex-direction: column; gap: 4px; height: 100%;
+  text-decoration: none; color: var(--white);
+}
+.work-shot {
+  display: block; aspect-ratio: 4 / 5; margin-bottom: 12px;
+  border-radius: var(--radius); overflow: hidden;
+  background: #121212; border: 1px solid var(--border-on-black);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.3, 1), border-color 0.35s ease;
+}
+.work-shot img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; }
+.work-card:hover .work-shot,
+.work-card:focus-visible .work-shot { transform: translateY(-8px); border-color: #777; }
+
+.work-name {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 16.5px; font-weight: 600; line-height: 1.4;
+}
+.work-arrow {
+  width: 13px; height: 13px; flex: none; opacity: 0.45;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.work-card:hover .work-arrow,
+.work-card:focus-visible .work-arrow { opacity: 1; transform: translate(-2px, -2px); }
+.work-kind { font-size: 13.5px; color: #9A9A9A; line-height: 1.5; }
+
+.work-controls { display: flex; align-items: center; gap: 14px; margin-top: 34px; }
+.rail-btn {
+  flex: none; width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid var(--border-on-black); background: transparent; color: var(--white);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+}
+.rail-btn svg { width: 16px; height: 16px; }
+.rail-btn:hover:not(:disabled) { background: var(--white); color: var(--black); border-color: var(--white); }
+.rail-btn:disabled { opacity: 0.3; cursor: default; }
+.rail-progress { flex: 1 1 auto; height: 2px; background: #2E2E2E; border-radius: 2px; overflow: hidden; }
+.rail-progress > span { display: block; height: 100%; width: 30%; background: var(--white); transition: width 0.2s ease-out; }
+.rail-hint { flex: none; font-size: 12.5px; color: #8A8A8A; letter-spacing: 0.02em; }
+
+@media (max-width: 760px) {
+  .work-track > li { flex-basis: 72vw; }
+  .work-track { --rail-pad: 24px; }
+  .work-rail { scroll-padding-inline-start: 24px; }
+  .rail-btn { display: none; }
+  .work-controls { margin-top: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-shot, .work-arrow, .rail-progress > span { transition: none; }
+}
 
 /* ==========================================================================
    5 — ההבטחה שלנו (קרם) — מחליף את סקשן העיתונות הבדוי בדוגמה
