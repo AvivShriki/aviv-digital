@@ -32,7 +32,7 @@ function initScrollReveal() {
   const revealAll = () => items.forEach((el) => el.classList.add('is-visible'));
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduceMotion) {
+  if (reduceMotion || !('IntersectionObserver' in window)) {
     revealAll();
     return;
   }
@@ -47,6 +47,10 @@ function initScrollReveal() {
   }, { threshold: 0.15 });
 
   items.forEach((el) => observer.observe(el));
+
+  // רשת ביטחון: תוכן שמחכה ל-opacity מצופה-חיתוך הוא תוכן שעלול להישאר
+  // בלתי נראה לנצח. אחרי שלוש שניות חושפים הכול, ויהי מה.
+  window.setTimeout(revealAll, 3000);
 
   // ניווט ישיר לעוגן (למשל קישור בתפריט) יכול "לדלג" מעל סקשן בלי
   // שהוא אי-פעם ייכנס לתצוגה — במקרה כזה חושפים הכל מיד.

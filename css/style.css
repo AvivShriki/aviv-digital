@@ -352,8 +352,6 @@ body {
   --tile-w: min(29vw, 390px);
   --tile-h: calc(var(--tile-w) * 1.25);
   overflow: hidden;
-  perspective: 1500px;
-  perspective-origin: 50% 50%;
 }
 #work.is-wheel .work-rail-wrap::before,
 #work.is-wheel .work-rail-wrap::after {
@@ -370,7 +368,8 @@ body {
 #work.is-wheel .work-rail {
   position: absolute; inset: 0;
   overflow: visible; scroll-snap-type: none;
-  transform-style: preserve-3d;
+  perspective: 1500px;
+  perspective-origin: 50% 50%;
 }
 
 #work.is-wheel .work-track {
