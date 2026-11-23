@@ -84,14 +84,15 @@ function initPortfolio() {
   const IDLE_DPS = 6;         // סיבוב חופשי, מעלות לשנייה. ב-9 (כמו ברפרנס)
                               // שורת הזהות מתחלפת כל 1.67 שניות — מהר מדי לקריאה.
   const FRICTION = 0.94;      // דעיכת האינרציה לפריים
+  const BRAKE = 0.78;         // דעיכה חדה יותר כשנוגעים — עצירה תוך כ-0.1 שניות
   const STOP = 0.015;         // מתחת לזה האינרציה נחשבת גמורה
   const SNAP_LERP = 0.14;
   const DEG_PER_PX = 0.17;
   const TAP_PX = 8;
   const TAP_MS = 450;
   const SUPPRESS_MS = 350;    // חלון שבו לחיצה אחרי גרירה מבוטלת
-  const HOLD_MS = 4200;       // שקט אחרי שהמשתמש הניח. צריך להספיק כדי להסתכל
-                              // על הפרויקט שהוא כיוון אליו וללחוץ עליו.
+  const HOLD_MS = 1400;       // שהייה קצרה רק אחרי מטרה מפורשת (נקודה או חץ),
+                              // כדי שרואים לאן הגענו. גרירה לא עוצרת בכלל.
 
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -190,23 +191,20 @@ function initPortfolio() {
 
     if (drag) {
       // הזווית נקבעת ישירות ב-pointermove
-    } else if (Math.abs(vel) > STOP) {
-      spin += vel;
-      vel *= FRICTION;
-      dirty = true;
-      if (Math.abs(vel) <= STOP) armSnap();
     } else if (snapTo !== null) {
+      // מטרה מפורשת: נקודה או חץ
       const diff = snapTo - spin;
-      if (Math.abs(diff) < 0.04 || calm.matches) {
-        spin = snapTo;
-        snapTo = null;
-      } else {
-        spin += diff * SNAP_LERP;
-      }
+      if (Math.abs(diff) < 0.04 || calm.matches) { spin = snapTo; snapTo = null; }
+      else spin += diff * SNAP_LERP;
       dirty = true;
-    } else if (wanted && !hovering && !focused && t > holdUntil) {
-      spin += IDLE_DPS * dt;
-      dirty = true;
+    } else {
+      // המהירות נרגעת אל *מהירות הסיבוב החופשי*, לא אל אפס. לכן זריקה
+      // אחורה מאטה, מתהפכת וממשיכה — בלי רגע של עמידה באמצע. כשנוגעים
+      // בגלגל היעד הוא אפס, והוא נעצר בריכוך.
+      const canIdle = wanted && !hovering && !focused && t > holdUntil;
+      const target = canIdle ? IDLE_DPS * dt : 0;
+      vel = target + (vel - target) * (canIdle ? FRICTION : BRAKE);
+      if (Math.abs(vel) > 1e-4) { spin += vel; dirty = true; }
     }
 
     if (!dirty) {
@@ -217,14 +215,6 @@ function initPortfolio() {
     dirty = false;
     write();
     updateFront(false);
-  }
-
-  // אחרי שהמשתמש הניח — הטבעת נחה על פרויקט, לא באמצע שום מקום
-  function armSnap() {
-    vel = 0;
-    const k = Math.round((FRONT - spin) / STEP);
-    snapTo = FRONT - k * STEP;
-    holdUntil = performance.now() + HOLD_MS;
   }
 
   function goToProject(index) {
@@ -303,8 +293,6 @@ function initPortfolio() {
       && Math.abs(window.scrollY - d.scrollY) < 3;
 
     if (!tap) suppressUntil = performance.now() + SUPPRESS_MS;
-    if (Math.abs(vel) <= STOP) armSnap();
-    else holdUntil = performance.now() + HOLD_MS;
   }
 
   stage.addEventListener('pointerup', endDrag);

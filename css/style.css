@@ -357,6 +357,9 @@ body {
   left: calc(var(--pf-w) / -2); top: calc(var(--pf-h) / -2);
   width: var(--pf-w); height: var(--pf-h);
   transform-style: preserve-3d;
+  /* ב-rotateX(90deg) חצי מהטבעת מפנה לצופה את הגב, והגב הוא תמונת ראי.
+     בלי זה הטקסט בחצי מהאריחים נקרא הפוך. */
+  backface-visibility: hidden;
   /* נקבע פעם אחת בבנייה ולא נכתב שוב */
   transform: rotateZ(calc(var(--i) * var(--pf-step))) translateX(var(--pf-r)) rotateX(90deg);
 }
