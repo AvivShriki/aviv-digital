@@ -357,11 +357,12 @@ body {
   left: calc(var(--pf-w) / -2); top: calc(var(--pf-h) / -2);
   width: var(--pf-w); height: var(--pf-h);
   transform-style: preserve-3d;
-  /* ב-rotateX(90deg) חצי מהטבעת מפנה לצופה את הגב, והגב הוא תמונת ראי.
-     בלי זה הטקסט בחצי מהאריחים נקרא הפוך. */
   backface-visibility: hidden;
-  /* נקבע פעם אחת בבנייה ולא נכתב שוב */
-  transform: rotateZ(calc(var(--i) * var(--pf-step))) translateX(var(--pf-r)) rotateX(90deg);
+  /* הסימן כאן קריטי. ההטיה של האריח מצטרפת להטיית הטבעת (--cam-x):
+     עם +90 הסכום הוא 142°, שעובר את הניצב ומראה את הצד התחתון —
+     התוכן יוצא הפוך ב-180°. עם -90 הסכום הוא -38°, והכרטיס נשען
+     לאחור מול הצופה כשהתוכן בכיוון הנכון. */
+  transform: rotateZ(calc(var(--i) * var(--pf-step))) translateX(var(--pf-r)) rotateX(-90deg);
 }
 .pf-stage.is-ring .pf-card {
   height: 100%; gap: 0; position: relative;
