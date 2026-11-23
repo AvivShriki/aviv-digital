@@ -168,7 +168,9 @@ function initWorkWheel() {
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
   const originals = Array.from(track.children);
 
-  const CYCLES = 6;        // ארבעה פרויקטים שש פעמים = עשרים וארבעה אריחים, כמו ברפרנס
+  const CYCLES = 8;        // ארבעה פרויקטים שמונה פעמים = שלושים ושניים אריחים.
+                           // מסך טלפון צר מכרטיס רחב, ולכן צריך יותר מהם כדי
+                           // שהקשת תתמלא — צפיפות במקום הגדלה.
   const DEG_PER_SEC = 5;   // סיבוב מלא בשבעים ושתיים שניות
   const FRONT_DEG = 305;   // הזווית שבה אריח תופס את השטח הנראה הגדול ביותר — נמדד
 
