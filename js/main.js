@@ -170,6 +170,7 @@ function initWorkWheel() {
 
   const CYCLES = 6;        // ארבעה פרויקטים שש פעמים = עשרים וארבעה אריחים, כמו ברפרנס
   const DEG_PER_SEC = 5;   // סיבוב מלא בשבעים ושתיים שניות
+  const FRONT_DEG = 305;   // הזווית שבה אריח תופס את השטח הנראה הגדול ביותר — נמדד
 
   let tiles = [];
   let button = null;
@@ -180,6 +181,9 @@ function initWorkWheel() {
   let wanted = true;       // הבחירה של המבקר — נשמרת גם כשהגלגל יוצא מהמסך
   let inView = false;
   let observer = null;
+  let caption = null;
+  let frontIndex = -1;
+  let hovered = null;
 
   const PLAY_ICON = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M4.5 2.4v11.2a.6.6 0 0 0 .92.5l8.6-5.6a.6.6 0 0 0 0-1l-8.6-5.6a.6.6 0 0 0-.92.5Z"/></svg>';
   const PAUSE_ICON = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="3" y="2" width="3.5" height="12" rx="1.2"/><rect x="9.5" y="2" width="3.5" height="12" rx="1.2"/></svg>';
@@ -188,8 +192,28 @@ function initWorkWheel() {
     const step = 360 / tiles.length;
     for (let i = 0; i < tiles.length; i += 1) {
       const deg = (angle + i * step).toFixed(3);
-      tiles[i].style.transform = 'rotateZ(' + deg + 'deg) translateX(var(--wheel-r)) rotateX(90deg)';
+      tiles[i].style.transform = 'rotateZ(' + deg + 'deg) translateX(var(--wheel-r)) rotateX(var(--tilt))';
     }
+    // איזה אריח נמצא עכשיו בחזית — חשבון ישיר, בלי לקרוא מהפריסה.
+    const next = Math.round(((FRONT_DEG - angle) % 360 + 360) % 360 / step) % tiles.length;
+    if (next !== frontIndex) {
+      frontIndex = next;
+      if (!hovered) showCaption(tiles[frontIndex]);
+    }
+  }
+
+  function showCaption(tile) {
+    if (!caption || !tile) return;
+    const name = tile.querySelector('.work-name').textContent.trim();
+    const kind = tile.querySelector('.work-kind').textContent.trim();
+    if (caption.dataset.name === name) return;
+    caption.dataset.name = name;
+    caption.classList.add('is-changing');
+    window.setTimeout(() => {
+      caption.querySelector('.wheel-now-name').textContent = name;
+      caption.querySelector('.wheel-now-kind').textContent = kind;
+      caption.classList.remove('is-changing');
+    }, 180);
   }
 
   function frame(stamp) {
@@ -235,6 +259,21 @@ function initWorkWheel() {
     }
     tiles = Array.from(track.children);
 
+    caption = document.createElement('p');
+    caption.className = 'wheel-now';
+    caption.innerHTML = '<span class="wheel-now-name"></span><span class="wheel-now-kind"></span>';
+    controls.parentNode.insertBefore(caption, controls);
+
+    // מי שמצביע על אריח מסוים רוצה לדעת מה הוא, לא מה בחזית.
+    tiles.forEach((tile) => {
+      tile.addEventListener('pointerenter', () => { hovered = tile; showCaption(tile); });
+      tile.addEventListener('pointerleave', () => {
+        if (hovered !== tile) return;
+        hovered = null;
+        showCaption(tiles[frontIndex]);
+      });
+    });
+
     button = document.createElement('button');
     button.type = 'button';
     button.className = 'wheel-btn';
@@ -261,6 +300,9 @@ function initWorkWheel() {
     stop();
     if (observer) { observer.disconnect(); observer = null; }
     if (button) { button.remove(); button = null; }
+    if (caption) { caption.remove(); caption = null; }
+    frontIndex = -1;
+    hovered = null;
     track.querySelectorAll('[aria-hidden="true"]').forEach((node) => node.remove());
     originals.forEach((item) => { item.style.transform = ''; });
     section.classList.remove('is-wheel');

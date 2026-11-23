@@ -351,6 +351,7 @@ body {
   --wheel-r: min(33vw, 465px);
   --tile-w: min(29vw, 390px);
   --tile-h: calc(var(--tile-w) * 1.25);
+  --tilt: -68deg;
   overflow: hidden;
 }
 #work.is-wheel .work-rail-wrap::before,
@@ -395,17 +396,27 @@ body {
 #work.is-wheel .work-card:hover .work-shot,
 #work.is-wheel .work-card:focus-visible .work-shot { transform: none; border-color: var(--white); }
 
-/* הכיתוב נוסע עם האריח, בתוך התמונה — אחרת הוא היה מרחף בחלל. */
 #work.is-wheel .work-card { position: relative; }
-#work.is-wheel .work-meta {
-  position: absolute; inset-inline: 0; bottom: 0; z-index: 1;
-  gap: 1px; padding: 30px 14px 13px;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.88) 10%, rgba(0, 0, 0, 0) 100%);
-  border-radius: 0 0 var(--radius) var(--radius);
+#work.is-wheel .work-meta { display: none; }
+
+/* שורת הזהות: מי הפרויקט שנמצא עכשיו בחזית הגלגל. */
+.wheel-now { display: none; }
+#work.is-wheel .wheel-now {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  margin: 22px 0 0; min-height: 28px;
 }
-#work.is-wheel .work-name { font-size: 15px; }
-#work.is-wheel .work-kind { font-size: 12px; color: #B8B8B8; }
-#work.is-wheel .work-arrow { display: none; }
+#work.is-wheel .wheel-now-name {
+  font-size: 19px; font-weight: 700; color: var(--white);
+}
+#work.is-wheel .wheel-now-kind { font-size: 14px; color: #9A9A9A; }
+#work.is-wheel .wheel-now-name,
+#work.is-wheel .wheel-now-kind { transition: opacity 0.25s ease; }
+#work.is-wheel .wheel-now.is-changing .wheel-now-name,
+#work.is-wheel .wheel-now.is-changing .wheel-now-kind { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  #work.is-wheel .wheel-now-name,
+  #work.is-wheel .wheel-now-kind { transition: none; }
+}
 
 /* בפריסת הגלגל החיצים ומד ההתקדמות חסרי משמעות — יש רק עצירה והפעלה. */
 #work.is-wheel .rail-btn,
