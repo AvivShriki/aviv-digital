@@ -78,10 +78,10 @@ function initPortfolio() {
 
   const originals = Array.from(ring.children);
   const PROJECTS = originals.length;
-  const CYCLES = 6;   // 4 פרויקטים × 6 = 24 אריחים. פחות מזה והקשת מתרוקנת —
-                      // נמדד: ב-12 אריחים המרווח בקשת 285px מול אריח של 178.
+  const CYCLES = 3;   // 4 פרויקטים × 3 = 12 אריחים כל 30°. בגליל רואים רק
+                      // את הקשת הקדמית, והחצי האחורי מוסתר ב-backface.
   const STEP = 360 / (PROJECTS * CYCLES);
-  const FRONT = 305;          // הזווית שבה אריח תופס את השטח הנראה הגדול ביותר — נמדד
+  const FRONT = 0;            // בגליל החזית היא פשוט rotateY(0) מול הצופה
   const IDLE_DPS = 6;         // סיבוב חופשי, מעלות לשנייה. ב-9 (כמו ברפרנס)
                               // שורת הזהות מתחלפת כל 1.67 שניות — מהר מדי לקריאה.
   const FRICTION = 0.94;      // דעיכת האינרציה לפריים
@@ -91,14 +91,13 @@ function initPortfolio() {
   const TAP_PX = 8;
   const TAP_MS = 450;
   const SUPPRESS_MS = 350;    // חלון שבו לחיצה אחרי גרירה מבוטלת
-  const HOLD_MS = 2600;       // שקט אחרי שהמשתמש הניח, לפני שהסיבוב חוזר
+  const HOLD_MS = 4200;       // שקט אחרי שהמשתמש הניח. צריך להספיק כדי להסתכל
+                              // על הפרויקט שהוא כיוון אליו וללחוץ עליו.
 
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   let slots = [];
   let dots = [];
-  let camX = '58deg';
-  let camY = '0deg';
   let spin = 0;
   let vel = 0;
   let snapTo = null;
@@ -137,10 +136,6 @@ function initPortfolio() {
     const section = stage.closest('.section');
     if (section) section.classList.add('has-ring');
 
-    const cs = getComputedStyle(stage);
-    camX = cs.getPropertyValue('--cam-x').trim() || camX;
-    camY = cs.getPropertyValue('--cam-y').trim() || camY;
-
     dots = Array.from(dotList.querySelectorAll('.pf-dot'));
     dots.forEach((dot, i) => dot.addEventListener('click', () => goToProject(i)));
 
@@ -152,7 +147,7 @@ function initPortfolio() {
   /* ---------- כתיבה ---------- */
 
   function write() {
-    ring.style.transform = 'rotateX(' + camX + ') rotateY(' + camY + ') rotateZ(' + spin.toFixed(3) + 'deg)';
+    ring.style.transform = 'rotateY(' + spin.toFixed(3) + 'deg)';
   }
 
   // מי בחזית — חשבון ישיר מהזווית, בלי לקרוא מהפריסה
@@ -365,12 +360,7 @@ function initPortfolio() {
     }
   }, { threshold: 0.08 }).observe(stage);
 
-  window.addEventListener('resize', () => {
-    const cs = getComputedStyle(stage);
-    camX = cs.getPropertyValue('--cam-x').trim() || camX;
-    camY = cs.getPropertyValue('--cam-y').trim() || camY;
-    dirty = true;
-  });
+  window.addEventListener('resize', () => { dirty = true; });
 
   rafId = requestAnimationFrame(frame);
 }

@@ -310,58 +310,51 @@ body {
    מצב גלגל — נדלק ב-JS בלבד
    ========================================================================== */
 
-/* קומפוזיציה: המניפה נפרשת משמאל, הכותרת יושבת מעליה מימין */
-.section.has-ring {
-  position: relative; overflow: hidden; padding: 0;
-  min-height: min(62vw, 810px);
-  display: flex; flex-direction: column; justify-content: center;
-}
-.section.has-ring > .container { position: relative; z-index: 2; width: 100%; }
-.section.has-ring > .container:first-of-type { padding-top: clamp(60px, 7vw, 96px); }
-.section.has-ring .section-head { margin-bottom: 0; max-width: 30ch; }
-.section.has-ring .pf-bar { padding-bottom: clamp(44px, 5vw, 72px); }
+/* קומפוזיציה: כותרת מעל, הקרוסלה מתחתיה ומרוכזת. הגליל כבר לא נשפך
+   מהפינה, ולכן אין סיבה להניח אותו מאחורי הטקסט. */
+.section.has-ring .section-head { margin-bottom: 40px; }
+.section.has-ring .pf-bar { justify-content: center; }
 
 .pf-stage.is-ring {
-  --pf-r: min(38vw, 545px);          /* רדיוס הטבעת */
-  --pf-w: min(12.4vw, 178px);        /* רוחב אריח */
+  /* גליל סביב ציר אנכי: האריחים זקופים ופונים החוצה, והסיבוב הוא
+     rotateY על ההורה בלבד. העומק מגיע מהפרספקטיבה ולא מהטיית הכרטיס,
+     ולכן הם גם יציבים לקריאה וגם מטרה אמינה ללחיצה. */
+  --pf-r: min(34vw, 430px);          /* רדיוס הגליל */
+  --pf-w: min(17vw, 214px);          /* רוחב אריח */
   --pf-h: calc(var(--pf-w) * 2.1667);
-  /* הרפרנס מטה את הטבעת כולה (52°/14°) ומעמיד את האריחים ניצבים לה.
-     המודל הזה מכוון לאריחים רחבים. עם מסכי טלפון לאורך הוא מפזר אותם;
-     כאן הטבעת שטוחה וההטיה יושבת על האריח. הסיבוב עדיין על ההורה. */
-  --cam-x: 0deg;
-  --cam-y: 0deg;
-  --pf-tilt: -58deg;                 /* הטיית האריח — זאת הזווית שרואים */
-  position: absolute; inset: 0; z-index: 0;
+  position: relative;
+  --pf-zoom: 1.26;                   /* ההגדלה של הכרטיס הקדמי בפרספקטיבה */
+  height: calc(var(--pf-h) * var(--pf-zoom) + 92px);
   overflow: hidden;
-  perspective: 1500px;
+  perspective: 2200px;
   perspective-origin: 50% 50%;
   touch-action: pan-y;               /* גרירה אנכית ממשיכה לגלול את הדף */
   cursor: grab;
 }
 .pf-stage.is-ring .pf-ring { will-change: auto; }
-.pf-stage.is-ring.is-live .pf-ring { will-change: transform;
-}
+.pf-stage.is-ring.is-live .pf-ring { will-change: transform; }
 .pf-stage.is-ring.is-dragging { cursor: grabbing; }
 .pf-stage.is-ring::before,
 .pf-stage.is-ring::after {
-  content: ""; position: absolute; inset-inline: 0; height: 90px; z-index: 2; pointer-events: none;
+  content: ""; position: absolute; top: 0; bottom: 0;
+  width: clamp(40px, 9vw, 130px); z-index: 2; pointer-events: none;
 }
-.pf-stage.is-ring::before { top: 0; background: linear-gradient(to bottom, var(--black) 20%, transparent); }
-.pf-stage.is-ring::after { bottom: 0; background: linear-gradient(to top, var(--black) 20%, transparent); }
+.pf-stage.is-ring::before { left: 0; background: linear-gradient(to right, var(--black), transparent); }
+.pf-stage.is-ring::after { right: 0; background: linear-gradient(to left, var(--black), transparent); }
 
 .pf-stage.is-ring .pf-ring {
-  position: absolute; left: 4%; top: 90%;
+  position: absolute; left: 50%; top: 50%;
   display: block; width: 0; height: 0; padding: 0; overflow: visible;
   transform-style: preserve-3d;
-  transform: rotateX(var(--cam-x)) rotateY(var(--cam-y)) rotateZ(var(--spin, 0deg));
 }
 .pf-stage.is-ring .pf-slot {
   position: absolute;
   left: calc(var(--pf-w) / -2); top: calc(var(--pf-h) / -2);
   width: var(--pf-w); height: var(--pf-h);
   transform-style: preserve-3d;
+  backface-visibility: hidden;       /* החצי האחורי של הגליל לא מוצג כלל */
   /* נקבע פעם אחת בבנייה ולא נכתב שוב */
-  transform: rotateZ(calc(var(--i) * var(--pf-step))) translateX(var(--pf-r)) rotateX(var(--pf-tilt));
+  transform: rotateY(calc(var(--i) * var(--pf-step))) translateZ(var(--pf-r));
 }
 .pf-stage.is-ring .pf-card {
   height: 100%; gap: 0; position: relative;
@@ -369,7 +362,7 @@ body {
   transition: transform 0.38s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 .pf-stage.is-ring .pf-card:hover,
-.pf-stage.is-ring .pf-card:focus-visible { transform: translateZ(18px); }
+.pf-stage.is-ring .pf-card:focus-visible { transform: translateZ(100px); }
 .pf-stage.is-ring .pf-meta { display: none; }
 .pf-stage.is-ring .pf-screen {
   height: 100%; aspect-ratio: auto; padding: 7px; border-radius: 32px;
@@ -386,26 +379,20 @@ body {
 }
 .pf-stage.is-ring .pf-card:hover .pf-screen,
 .pf-stage.is-ring .pf-card:focus-visible .pf-screen {
-  filter: brightness(1.04);
-  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.62), 0 40px 80px -16px rgba(0, 0, 0, 0.95);
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.7), 0 52px 96px -14px rgba(0, 0, 0, 1);
 }
 
 /* בטלפון זאת אותה טבעת, אבל הקומפוזיציה מתיישרת: הכותרת מעל והטבעת
    בפס משלה. הנחת הטבעת מאחורי הטקסט עובדת רק כשיש רוחב לשתי עמודות. */
 @media (max-width: 760px) {
-  .section.has-ring { display: block; min-height: 0; padding: 0; }
-  .section.has-ring > .container:first-of-type { padding-top: clamp(64px, 14vw, 88px); }
-  .section.has-ring .section-head { max-width: none; margin-bottom: 20px; }
-  .section.has-ring .pf-bar { padding-bottom: clamp(56px, 12vw, 80px); margin-top: 20px; }
-
+  .section.has-ring .section-head { margin-bottom: 26px; }
   .pf-stage.is-ring {
-    --pf-r: 48vw;
-    --pf-w: 25vw;
-    position: relative; inset: auto;
-    height: 116vw;
+    --pf-r: 64vw;
+    --pf-w: 48vw;
+    --pf-zoom: 1.4;
+    perspective: 1500px;
   }
-  .pf-stage.is-ring .pf-ring { left: 8%; top: 86%; }
-  .pf-stage.is-ring::before, .pf-stage.is-ring::after { height: 46px; }
   .pf-bar { gap: 14px; }
   .pf-now { order: 3; flex-basis: 100%; }
 }
