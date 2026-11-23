@@ -288,6 +288,7 @@ body {
 .work-card:hover .work-shot,
 .work-card:focus-visible .work-shot { transform: translateY(-8px); border-color: #777; }
 
+.work-meta { display: flex; flex-direction: column; gap: 4px; }
 .work-name {
   display: flex; align-items: center; gap: 7px;
   font-size: 16.5px; font-weight: 600; line-height: 1.4;
@@ -324,6 +325,105 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .work-shot, .work-arrow, .rail-progress > span { transition: none; }
 }
+
+/* --------------------------------------------------------------------------
+   גלגל תלת-ממדי — אותה גאומטריה של cinematic.co.il
+   הזווית של כל אריח איננה כתובה: היא נולדת מכך שציר הגלגל יושב מחוץ
+   לפריים, הרחק ממרכז הפרספקטיבה. כל אריח נחתך בזווית אחרת לפי מקומו
+   על הקשת, והמניפה מתקבלת מעצמה.
+   -------------------------------------------------------------------------- */
+
+.work-stage-note { display: none; }
+
+/* קומפוזיציה של הרפרנס: המניפה נפרשת משמאל, הכותרת יושבת מעליה מימין.
+   בלי זה שני שלישים מהבמה נשארים ריקים. */
+#work.is-wheel { position: relative; overflow: hidden; padding: 0; min-height: min(62vw, 810px); display: flex; flex-direction: column; justify-content: center; }
+#work.is-wheel > .container { position: relative; z-index: 2; width: 100%; }
+#work.is-wheel > .container:first-of-type { padding-top: clamp(60px, 7vw, 96px); }
+#work.is-wheel .section-head { margin-bottom: 0; max-width: 30ch; }
+#work.is-wheel .work-controls { padding-bottom: clamp(44px, 5vw, 72px); }
+
+#work.is-wheel .work-rail-wrap {
+  position: absolute; inset: 0; z-index: 0;
+  /* היחס בין רוחב האריח לרדיוס הוא מה שקובע את צפיפות המניפה.
+     אצלם הוא 0.89 (448 חלקי 502); מתחת לזה האריחים מתפזרים ונחתכים
+     לרסיסים במקום להצטבר זה על זה. */
+  --wheel-r: min(33vw, 465px);
+  --tile-w: min(29vw, 390px);
+  --tile-h: calc(var(--tile-w) * 1.25);
+  overflow: hidden;
+  perspective: 1500px;
+  perspective-origin: 50% 50%;
+}
+#work.is-wheel .work-rail-wrap::before,
+#work.is-wheel .work-rail-wrap::after {
+  display: block; opacity: 1; inset: auto 0 auto 0; top: auto; bottom: auto;
+  width: auto; height: 90px; z-index: 1;
+}
+#work.is-wheel .work-rail-wrap::before {
+  top: 0; background: linear-gradient(to bottom, var(--black) 20%, transparent);
+}
+#work.is-wheel .work-rail-wrap::after {
+  bottom: 0; background: linear-gradient(to top, var(--black) 20%, transparent);
+}
+
+#work.is-wheel .work-rail {
+  position: absolute; inset: 0;
+  overflow: visible; scroll-snap-type: none;
+  transform-style: preserve-3d;
+}
+
+#work.is-wheel .work-track {
+  position: absolute; left: 4%; top: 90%;
+  display: block; width: 0; height: 0; padding: 0; margin: 0;
+  transform-style: preserve-3d;
+}
+#work.is-wheel .work-track::after { content: none; }
+
+#work.is-wheel .work-track > li {
+  position: absolute;
+  left: calc(var(--tile-w) / -2);
+  top: calc(var(--tile-h) / -2);
+  width: var(--tile-w); height: var(--tile-h);
+  transform-style: preserve-3d;
+}
+
+#work.is-wheel .work-card { height: 100%; gap: 0; }
+#work.is-wheel .work-shot {
+  height: 100%; aspect-ratio: auto; margin: 0; border: none;
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.75);
+}
+#work.is-wheel .work-card:hover .work-shot,
+#work.is-wheel .work-card:focus-visible .work-shot { transform: none; border-color: var(--white); }
+
+/* הכיתוב נוסע עם האריח, בתוך התמונה — אחרת הוא היה מרחף בחלל. */
+#work.is-wheel .work-card { position: relative; }
+#work.is-wheel .work-meta {
+  position: absolute; inset-inline: 0; bottom: 0; z-index: 1;
+  gap: 1px; padding: 30px 14px 13px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.88) 10%, rgba(0, 0, 0, 0) 100%);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+#work.is-wheel .work-name { font-size: 15px; }
+#work.is-wheel .work-kind { font-size: 12px; color: #B8B8B8; }
+#work.is-wheel .work-arrow { display: none; }
+
+/* בפריסת הגלגל החיצים ומד ההתקדמות חסרי משמעות — יש רק עצירה והפעלה. */
+#work.is-wheel .rail-btn,
+#work.is-wheel .rail-progress,
+#work.is-wheel .rail-hint { display: none; }
+#work .wheel-btn { display: none; }
+#work.is-wheel .wheel-btn {
+  flex: none; display: inline-flex; align-items: center; gap: 9px;
+  padding: 11px 20px 11px 16px; border-radius: 999px;
+  border: 1px solid var(--border-on-black); background: transparent; color: var(--white);
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+#work.is-wheel .wheel-btn:hover { background: var(--white); color: var(--black); border-color: var(--white); }
+#work.is-wheel .wheel-btn svg { width: 15px; height: 15px; }
+
+@media (max-width: 899px) { #work.is-wheel .work-rail-wrap { height: auto; } }
 
 /* ==========================================================================
    5 — ההבטחה שלנו (קרם) — מחליף את סקשן העיתונות הבדוי בדוגמה

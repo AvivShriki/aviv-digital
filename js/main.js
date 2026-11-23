@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavToggle();
   initScrollReveal();
   initWorkRail();
+  initWorkWheel();
 });
 
 function initNavToggle() {
@@ -148,4 +149,129 @@ function initWorkRail() {
   }, true);
 
   update();
+}
+
+// גלגל תיק העבודות — אותה גאומטריה של cinematic.co.il.
+// הרכבת הנגללת שב-HTML היא הבסיס; במסך רחב היא משודרגת לגלגל, ובצר
+// היא נשארת כמו שהיא. בלי JS, או עם העדפת תנועה מופחתת, אין גלגל בכלל.
+function initWorkWheel() {
+  const section = document.getElementById('work');
+  const track = section && section.querySelector('.work-track');
+  const controls = section && section.querySelector('.work-controls');
+  if (!section || !track || !controls) return;
+
+  const wide = window.matchMedia('(min-width: 900px)');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const originals = Array.from(track.children);
+
+  const CYCLES = 6;        // ארבעה פרויקטים שש פעמים = עשרים וארבעה אריחים, כמו ברפרנס
+  const DEG_PER_SEC = 5;   // סיבוב מלא בשבעים ושתיים שניות
+
+  let tiles = [];
+  let button = null;
+  let angle = 0;
+  let frameId = 0;
+  let lastStamp = 0;
+  let running = false;
+  let wanted = true;       // הבחירה של המבקר — נשמרת גם כשהגלגל יוצא מהמסך
+  let inView = false;
+  let observer = null;
+
+  const PLAY_ICON = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M4.5 2.4v11.2a.6.6 0 0 0 .92.5l8.6-5.6a.6.6 0 0 0 0-1l-8.6-5.6a.6.6 0 0 0-.92.5Z"/></svg>';
+  const PAUSE_ICON = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="3" y="2" width="3.5" height="12" rx="1.2"/><rect x="9.5" y="2" width="3.5" height="12" rx="1.2"/></svg>';
+
+  function place() {
+    const step = 360 / tiles.length;
+    for (let i = 0; i < tiles.length; i += 1) {
+      const deg = (angle + i * step).toFixed(3);
+      tiles[i].style.transform = 'rotateZ(' + deg + 'deg) translateX(var(--wheel-r)) rotateX(90deg)';
+    }
+  }
+
+  function frame(stamp) {
+    if (!lastStamp) lastStamp = stamp;
+    angle = (angle + DEG_PER_SEC * ((stamp - lastStamp) / 1000)) % 360;
+    lastStamp = stamp;
+    place();
+    frameId = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    lastStamp = 0;
+    frameId = requestAnimationFrame(frame);
+  }
+
+  function stop() {
+    if (!running) return;
+    running = false;
+    cancelAnimationFrame(frameId);
+  }
+
+  // הגלגל מסתובב רק כשהוא גם רצוי, גם על המסך וגם בלשונית פעילה.
+  function sync() {
+    if (wanted && inView && !document.hidden) start();
+    else stop();
+    if (!button) return;
+    button.innerHTML = (wanted ? PAUSE_ICON : PLAY_ICON) + '<span>' + (wanted ? 'עצירה' : 'הפעלה') + '</span>';
+    button.setAttribute('aria-label', wanted ? 'עצירת הגלגל' : 'הפעלת הגלגל');
+    button.setAttribute('aria-pressed', String(!wanted));
+  }
+
+  function build() {
+    for (let cycle = 1; cycle < CYCLES; cycle += 1) {
+      originals.forEach((item) => {
+        const copy = item.cloneNode(true);
+        copy.setAttribute('aria-hidden', 'true');
+        copy.querySelectorAll('a').forEach((link) => link.setAttribute('tabindex', '-1'));
+        copy.querySelectorAll('img').forEach((img) => img.setAttribute('loading', 'eager'));
+        track.appendChild(copy);
+      });
+    }
+    tiles = Array.from(track.children);
+
+    button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'wheel-btn';
+    controls.insertBefore(button, controls.firstChild);
+    button.addEventListener('click', () => { wanted = !wanted; sync(); });
+
+    section.classList.add('is-wheel');
+    place();
+
+    observer = new IntersectionObserver((entries) => {
+      inView = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0.1 });
+    observer.observe(track.closest('.work-rail-wrap'));
+
+    // מי שמנווט במקלדת צריך יעד שעומד במקום.
+    track.addEventListener('focusin', () => { inView = false; sync(); });
+    track.addEventListener('focusout', () => { inView = true; sync(); });
+
+    sync();
+  }
+
+  function teardown() {
+    stop();
+    if (observer) { observer.disconnect(); observer = null; }
+    if (button) { button.remove(); button = null; }
+    track.querySelectorAll('[aria-hidden="true"]').forEach((node) => node.remove());
+    originals.forEach((item) => { item.style.transform = ''; });
+    section.classList.remove('is-wheel');
+    tiles = [];
+    angle = 0;
+  }
+
+  function evaluate() {
+    const shouldSpin = wide.matches && !calm.matches;
+    if (shouldSpin && !section.classList.contains('is-wheel')) build();
+    else if (!shouldSpin && section.classList.contains('is-wheel')) teardown();
+  }
+
+  document.addEventListener('visibilitychange', sync);
+  wide.addEventListener('change', evaluate);
+  calm.addEventListener('change', evaluate);
+  evaluate();
 }
